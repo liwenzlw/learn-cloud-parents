@@ -1,0 +1,59 @@
+# 测试 requireGroup 和死信相关配置
+spring:
+  cloud:
+    stream:
+      bindings:
+        tryProducerConfig:
+          destination: tryProducerConfig # 交换器名称 = prefix + destination
+          contentType: application/json # 消息类型。默认值：application/json
+          binder: # 使用哪个binder创建bingding （如果应用中存在多个binder）。默认值：null
+          producer:
+            requiredGroups: tryRequiredGroupsA,tryRequiredGroupsB # queueName = prefix + tryProducerConfig + requiredGroup[i]。当 queueNameGroupOnly = ture 时 queueName =  requiredGroup[i]
+            headerMode: headers # headers：使用消息中间件的native header mechanism； embeddedHeaders: 将headers嵌入到 payload中。rabbitmq只支持 native header
+            useNativeEncoding: false # 设置为true 后 outbound message会被配置的client producer value serializer序列化，outbound message不再使用binding的contentType进行内容编排，
+                                     # 此外需要在consumer端使用合适的decoder（consumer value de-serializer）进行反序列化，同时 headerMode=embeddedHeaders 配置也会失效。默认值：false
+            errorChannelEnabled: false # 如果binder支持异步发送信息，在设置为true后，？？ TODO
+      rabbit:
+        bindings:
+          tryProducerConfig:
+            producer:
+              #交换器相关配置
+              prefix: "" # 声明 exchange 时需要添加的名称前缀 （不会添加到requireGroups前）。 默认值：""
+              exchangeType: topic # 默认值：topic
+              exchangeDurable: true # 交换器元数据持久化，重启后可以恢复交换器。默认值： true
+              exchangeAutoDelete: true # 在最后一个queue被移除后，是否将exchange删除。默认值：true
+              transacted: true # 是否使用事务型channel。默认值：false
+              confirmAckChannel: # 前提： errorChannelEnabled = true  TODO
+              delayedExchange: false # 创建延时交换器（在声明交换器时使用x-delayed-type argument），消息在exchange中延时后再路由的queue中，如果rabbitmq重启，消息会丢失。需要安装额外rabbitmq plugin。默认值：false
+              #队列相关配置（仅使用于requiredGroups 指定的queue）
+              bindQueue: true # 自动 declare queue，并且将 queue绑定到 exchange。默认值：true
+              bindingRoutingKey: tryRequiredGroups # 将 requiredGroups 和 exchange绑定的 routingkey。 默认值：#
+              queueNameGroupOnly: true # 队列名称前不添加 prefix。 默认值： false
+              lazy: true # 使用 x-queue-mode=lazy 参数申明队列，建议使用policy替代
+              expires: 600000 # 闲置删除时间（毫秒）。默认值：no expiration
+              maxLength: 10 # 队列中的消息最大个数，队列前面的会被删除。默认值：no limit
+              maxLengthBytes: # 队列的最大容量（字节）
+              maxPriority: 20 # 队列中消息的最大优先级 (0-255) 默认值：none
+              ttl: 600000 # 队列的生存时间（毫秒，从声明后开始计时）
+              # 死信相关配置 需要 requiredGroups 不为空
+              autoBindDlq: true # 创建DLQ并使用deadLetterRoutingKey作为routingkey将DLQ和DLX绑定。默认值：false
+              # - 死信交换器
+              deadLetterExchange: ${spring.cloud.stream.bindings.tryProducerConfig.destination}.DLX #死信交换器名称，会被配置到源queue的Features中（x-dead-letter-exchange: tryProducerConfig.DLX）（需要autoBindDlq = true）。默认值：prefix + DLX
+              deadLetterExchangeType: topic # 死信交换器类型（需要autoBindDlq = true）。默认值：direct
+              declareDlx: true # 自动declare死信交换器（需要 autoBindDlq  = true）。默认值：true
+              # - 死信队列
+              deadLetterQueueName: tryRequiredGroups.dlq # 死信队列名称。 默认值：prefix + originQueueName.dlq
+              #deadLetterRoutingKey: xxxx # DLX 和 DLQ的绑定routingkey，会被配置到源queue的Features中（x-dead-letter-routing-key: xxxx）（需要autoBindDlq = true）。默认值：originQueue
+              dlqDeadLetterExchange: aa.e # 配置 DLQ 的 x-dead-letter-exchange Feature。 默认值：none
+              #dlqDeadLetterRoutingKey: b # 配置 DLQ 的 x-dead-letter-routing-key Feature，（如果设置了这个属性但是没有显式指定deadLetterRoutingKey的值，则DLQ 和 DLX不会自动绑定，可能是程序bug吧）。默认值：none
+              dlqExpires: 1200000 # 死信队列闲置多久后会被删除（毫秒），仅对 requiredGroups 有效。默认值： no expiration
+              dlqLazy: true # 使用 x-queue-mode=lazy 参数申明队列，建议使用policy替代
+              dlqMaxLength: 10 # 死信队列中的消息最大个数，队列前面的会被删除。默认值：no limit
+              dlqMaxLengthBytes: # 死信队列的最大容量（字节）
+              dlqMaxPriority: 20 # 死信队列中消息的最大优先级 (0-255) 默认值：none
+              dlqTtl: 600000 # 死信队列的生存时间（毫秒，从声明后开始计时）
+              # 发布消息配置
+              routingKeyExpression: headers[routingKey] # 发布消息时使用的routingkey (EL表达式 上下文为 Message)。默认值为 destination or destination-<partition>
+              deliveryMode: PERSISTENT # 消息是否需要持久化，可选项：PERSISTENT or NON_PERSISTENT。 默认值：PERSISTENT
+              headerPatterns: ['x*','routing*'] # 简单的匹配模式 ("xxx*", "*xxx", "*xxx*" or "xxx*yyy")。用来筛选将被添加到 outbound messages中 的header （上下文为 Message.headers）。默认值：['*']
+              compress: false # 对 payload进行压缩(Base64编码)。默认值： false

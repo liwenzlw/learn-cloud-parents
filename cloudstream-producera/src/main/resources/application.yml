@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: cloud.stream.producera
+  level:
+    root: debug
+  profiles:
+    include:
+     # - sub-rabbitmq-tryRequiredGroupsAndDlq
+    active: sub-rabbitmq-tryRequiredGroupsAndDlq
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+server:
+  port: 8003
+eureka:
+  client:
+    enabled: false

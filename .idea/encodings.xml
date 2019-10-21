@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/cloudstream-consumera" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloudstream-consumerb" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloudstream-producer" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloudstream-producera" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloudstream-producerb" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eureka-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eureka-server" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springbootadmin-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springbootadmin-server" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springcloudstream-a" charset="UTF-8" />
+  </component>
+</project>

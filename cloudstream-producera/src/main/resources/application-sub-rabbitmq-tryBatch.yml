@@ -1,0 +1,18 @@
+# 测试 requireGroup 和死信相关配置
+spring:
+  cloud:
+    stream:
+      bindings:
+        tryBatch:
+          destination: tryBatch
+      rabbit:
+        bindings:
+          tryBatch:
+            producer:
+              #交换器相关配置
+              # 发布消息配置
+              batchingEnabled: true # 激活消息批处理。默认值 false
+              batchSize: 2 # 缓存中的消息数量。默认值： 180
+              batchBufferLimit: 10000 # 缓存大小。默认值：10000
+              batchTimeout: 5000 # 缓存超时时间。默认值 5000
+              routingKeyExpression: headers[routingKey] # 发布消息时使用的routingkey (EL表达式 上下文为 Message)。默认值为 destination or destination-<partition>

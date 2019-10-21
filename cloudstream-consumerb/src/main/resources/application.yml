@@ -1,0 +1,12 @@
+spring:
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+  application:
+    name: cloud.stream.consumerb
+logging:
+  level:
+    root: debug
+server:
+  port: 8002

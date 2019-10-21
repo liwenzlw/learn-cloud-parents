@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        tryRequiredGroupsA:
+          destination: tryProducerConfig
+          group: tryRequiredGroupsA # queueName = prefix + destination.group。 如果 queueNameGroupOnly = true 则 queueName = prefix + group
+        tryRequiredGroupsB:
+          destination: tryProducerConfig
+          group: tryRequiredGroupsB
+      rabbit:
+        bindings:
+          tryRequiredGroupsA:
+            consumer:
+              prefix: ""
+              bindingRoutingKey: tryRequiredGroups
+              queueNameGroupOnly: true
+          tryRequiredGroupsB:
+            consumer:
+              prefix: "" # 给 destination 和 queueName 添加前缀
+              bindingRoutingKey: tryRequiredGroups
+              queueNameGroupOnly: true # 对prefix属性没有作用。queueName 默认为 prefix + destination.group, 如果 设置为true queueName = prefix + group

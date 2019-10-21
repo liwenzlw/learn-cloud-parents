@@ -1,0 +1,90 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        tryConsumerConfig:
+          destination:
+          group:
+          contentType: application/json
+          binder: # 如果应用中存储多个binder需要指定
+          autoStartup: true # 必须设置为true，否则Spring容器不会加载RabbitAdmin类。默认值：true
+          concurrency: 1 # inbound consumer的并发。默认值：1
+          partitioned: false # Whether the consumer receives data from a partitioned producer
+          headerMode: headers # rabbitmq 只支持 headers，不支持 embeddedHeaders
+          maxAttempts: 1 # 重试次数。默认值：3
+          backOffInitialInterval: 1000 # 重试退避时间间隔。默认值：1000
+          backOffMaxInterval: 10000 # 重试最大退避时间间隔。默认值：10000
+          backOffMultiplier: 2.0 # 退避指数。默认值 2.0
+          # 实例相关配置。在设置分区时很有用，确保数据如何被正确的分发给多个消费端
+          instanceIndex: 0 # 实例编号，从0开始。默认值：0
+          instanceCount: 1 # 实例总数。默认值： 1
+          # 重试异常
+          retryableExceptions: # 指定哪些异常应该被重试，哪些不应该重试（格式：Map）。默认值：empty
+            spring.cloud.stream.bindings.input.consumer.retryable-exceptions.java.lang.IllegalStateException: false
+          defaultRetryable: true # Whether exceptions thrown by the listener that are not listed in the retryableExceptions are retryable.
+          # 自定义编码
+          useNativeEncoding: false # 设置为true 后 inbound message会被配置的client consumer value de-serializer反序列化，inbound message不再使用binding的contentType进行内容编排，
+                                   # 此外需要在producer端使用合适的encoder（producer value serializer）进行序列化，同时 headerMode=embeddedHeaders 配置也会失效。默认值：false
+      rabbit:
+        bindings:
+          tryConsumerConfig:
+            acknowledgeMode: AUTO # 默认值：AUTO
+            anonymousGroupPrefix: anonymous. # 如果binding没有配置group，会创建一个匿名的auto-delete的queue。默认值：anonymous.<base64 representation of a UUID>
+            #交换器相关配置
+            prefix: "" # 声明 exchange 时需要添加的名称前缀 （不会添加到requireGroups前）。 默认值：""
+            exchangeType: topic # 默认值：topic
+            exchangeDurable: true # 交换器元数据持久化，重启后可以恢复交换器。默认值： true
+            exchangeAutoDelete: true # 在最后一个queue被移除后，是否将exchange删除。默认值：true
+            transacted: true # 是否使用事务型channel。默认值：false
+            #队列相关配置（仅使用于requiredGroups 指定的queue）
+            bindQueue: true # 自动 declare queue，并且将 queue绑定到 exchange。默认值：true
+            bindingRoutingKey: tryRequiredGroups # 将 requiredGroups 和 exchange绑定的 routingkey。 默认值：#
+            queueNameGroupOnly: true # 队列名称前不添加 prefix。 默认值： false
+            lazy: true # 使用 x-queue-mode=lazy 参数申明队列，建议使用policy替代
+            expires: 60000 # 闲置删除时间（毫秒）。默认值：no expiration
+            maxLength: 10 # 队列中的消息最大个数，队列前面的会被删除。默认值：no limit
+            maxLengthBytes: # 队列的最大容量（字节）
+            maxPriority: 20 # 队列中消息的最大优先级 (0-255) 默认值：none
+            ttl: 600000 # 队列的生存时间（毫秒，从声明后开始计时）
+            # 死信相关配置
+            autoBindDlq: false # 使用queueName作为routingkey将死信队列和死信交换器绑定。默认值：false
+            # - 死信交换器
+            deadLetterExchange: ${spring.cloud.stream.bindings.tryProducerConfig.destination}.DLX #死信交换器名称，会被配置到源queue的Features中（x-dead-letter-exchange: tryProducerConfig.DLX）。默认值：prefix + DLX
+            deadLetterExchangeType: topic # 死信交换器类型。默认值：direct
+            declareDlx: true # 自动declare死信交换器（需要 autoBindDlq  = true）。默认值：true
+            # - 死信队列, 这两个值
+            deadLetterQueueName: tryRequiredGroups.dlq # 死信队列名称。 默认值：prefix + originQueueName.dlq
+            #deadLetterRoutingKey:  # 发送到死信交换器使用的routingkey，会被配置到源queue的Features中（x-dead-letter-routing-key: xxxx）。默认值：originQueue
+            dlqExpires: 120000 # 死信队列闲置多久后会被删除（毫秒），仅对 requiredGroups 有效。默认值： no expiration
+            dlqLazy: true # 使用 x-queue-mode=lazy 参数申明队列，建议使用policy替代
+            dlqMaxLength: 10 # 死信队列中的消息最大个数，队列前面的会被删除。默认值：no limit
+            dlqMaxLengthBytes: # 死信队列的最大容量（字节）
+            dlqMaxPriority: 20 # 死信队列中消息的最大优先级 (0-255) 默认值：none
+            dlqTtl: 600000 # 死信队列的生存时间（毫秒，从声明后开始计时）
+
+
+            dlqDeadLetterExchange:
+            dlqDeadLetterRoutingKey:
+            dlqOverflowBehavior:
+
+            consumerTagPrefix:
+            containerType:
+            declareExchange:
+            delayedExchange:
+
+            durableSubscription:
+            exclusive:
+            failedDeclarationRetryInterval:
+            frameMaxHeadroom:
+            headerPatterns:
+            maxConcurrency:
+            missingQueuesFatal:
+            overflowBehavior:
+            prefetch:
+            queueDeclarationRetries:
+            recoveryInterval:
+            requeueRejected:
+            republishDeliveryMode:
+            republishToDlq:
+            txSize:
+

@@ -1,0 +1,7 @@
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+logging:
+  level:
+    root: debug

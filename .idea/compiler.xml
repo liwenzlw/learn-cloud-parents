@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="cloudstream-producerb" />
+        <module name="cloudstream-producera" />
+        <module name="eureka-server" />
+        <module name="eureka-client" />
+        <module name="cloudstream-consumera" />
+        <module name="springcloudstream-a" />
+        <module name="springbootadmin-server" />
+        <module name="cloudstream-consumerb" />
+        <module name="learn-cloud-parents" />
+        <module name="cloudstream-producer" />
+        <module name="springbootadmin-client" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cloudstream-producer" target="1.8" />
+      <module name="netflix-client" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="cloudstream-consumera" options="-parameters" />
+      <module name="cloudstream-consumerb" options="-parameters" />
+      <module name="cloudstream-producer" options="-parameters" />
+      <module name="cloudstream-producera" options="-parameters" />
+      <module name="cloudstream-producerb" options="-parameters" />
+      <module name="eureka-client" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="netflix-client" options="-parameters" />
+      <module name="springbootadmin-client" options="-parameters" />
+      <module name="springbootadmin-server" options="-parameters" />
+      <module name="springcloudstream-a" options="-parameters" />
+    </option>
+  </component>
+</project>
