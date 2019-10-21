@@ -11,7 +11,7 @@ spring:
           concurrency: 1 # inbound consumer的并发。默认值：1
           partitioned: false # Whether the consumer receives data from a partitioned producer
           headerMode: headers # rabbitmq 只支持 headers，不支持 embeddedHeaders
-          maxAttempts: 1 # 重试次数。默认值：3
+          maxAttempts: 1 # 重试次数。1 表示禁用重试。默认值：3
           backOffInitialInterval: 1000 # 重试退避时间间隔。默认值：1000
           backOffMaxInterval: 10000 # 重试最大退避时间间隔。默认值：10000
           backOffMultiplier: 2.0 # 退避指数。默认值 2.0
@@ -35,8 +35,14 @@ spring:
             exchangeType: topic # 默认值：topic
             exchangeDurable: true # 交换器元数据持久化，重启后可以恢复交换器。默认值： true
             exchangeAutoDelete: true # 在最后一个queue被移除后，是否将exchange删除。默认值：true
+            declareExchange: true # 是否声明交换器。默认值：true
+            delayedExchange: false # 创建延时交换器（在声明交换器时使用x-delayed-type argument），消息在exchange中延时后再路由的queue中，如果rabbitmq重启，消息会丢失。需要安装额外rabbitmq plugin。默认值：false
+
             transacted: true # 是否使用事务型channel。默认值：false
             #队列相关配置（仅使用于requiredGroups 指定的queue）
+            durableSubscription: # queue是否需要持久化 （durable）。需要显式设置group。默认值：true
+            exclusive: false # 是否创建专属消费者。当为 ture时，Concurrency 应为1。通常在需要严格排序但允许热备份实例在故障后接管时使用。参见recoveryInterval，它控制备用实例尝试使用的频率。默认值：false TODO
+            overflowBehavior: # queue溢出后如何处理。可选项：drop-head or reject-publish。默认值：none
             bindQueue: true # 自动 declare queue，并且将 queue绑定到 exchange。默认值：true
             bindingRoutingKey: tryRequiredGroups # 将 requiredGroups 和 exchange绑定的 routingkey。 默认值：#
             queueNameGroupOnly: true # 队列名称前不添加 prefix。 默认值： false
@@ -54,7 +60,10 @@ spring:
             declareDlx: true # 自动declare死信交换器（需要 autoBindDlq  = true）。默认值：true
             # - 死信队列, 这两个值
             deadLetterQueueName: tryRequiredGroups.dlq # 死信队列名称。 默认值：prefix + originQueueName.dlq
-            #deadLetterRoutingKey:  # 发送到死信交换器使用的routingkey，会被配置到源queue的Features中（x-dead-letter-routing-key: xxxx）。默认值：originQueue
+            #deadLetterRoutingKey: xxxx # DLX 和 DLQ的绑定routingkey，会被配置到源queue的Features中（x-dead-letter-routing-key: xxxx）（需要autoBindDlq = true）。默认值：originQueue
+            dlqDeadLetterExchange: aa.e # 配置 DLQ 的 x-dead-letter-exchange Feature。 默认值：none
+            #dlqDeadLetterRoutingKey: b # 配置 DLQ 的 x-dead-letter-routing-key Feature，（如果设置了这个属性但是没有显式指定deadLetterRoutingKey的值，则DLQ 和 DLX不会自动绑定，可能是程序bug吧）。默认值：none
+            dlqOverflowBehavior: # dlq溢出后如何处理。可选项：drop-head or reject-publish。默认值：none
             dlqExpires: 120000 # 死信队列闲置多久后会被删除（毫秒），仅对 requiredGroups 有效。默认值： no expiration
             dlqLazy: true # 使用 x-queue-mode=lazy 参数申明队列，建议使用policy替代
             dlqMaxLength: 10 # 死信队列中的消息最大个数，队列前面的会被删除。默认值：no limit
@@ -62,29 +71,22 @@ spring:
             dlqMaxPriority: 20 # 死信队列中消息的最大优先级 (0-255) 默认值：none
             dlqTtl: 600000 # 死信队列的生存时间（毫秒，从声明后开始计时）
 
+            # consumerTag
+            consumerTagPrefix: ${spring.application.name}-${spring.cloud.stream.bindings.tryConsumerConfig.group}-${spring.cloud.stream.instance-index} # rabbitmq中的consumer的tag生成规则。
 
-            dlqDeadLetterExchange:
-            dlqDeadLetterRoutingKey:
-            dlqOverflowBehavior:
+            # Spring Application AMPQ 客户端配置
+            containerType: simple # 指定Spring AMQP 容器。 默认值：simple
+            missingQueuesFatal: # 当找不到queue时，是否停止 listener container。默认值：false TODO
+            queueDeclarationRetries: # 声明queue失败时重试次数。需要 missingQueuesFatal = true 否则会一直重试下去。默认值：3
+            maxConcurrency: 1 #consumers的最大数量，如果 containerType=direct 则不支持。默认值：1
+            prefetch: 1 # 消费端每次获取消息数量。默认值：1
+            recoveryInterval: 5000 # connection 恢复重试间隔。默认值：5000
+            failedDeclarationRetryInterval: 5000 # queue声明失败的重试时间间隔。默认值：5000
+            txSize: 1 # acks直接的传输次数，如果containerType = direct 则不支持。默认值：1
 
-            consumerTagPrefix:
-            containerType:
-            declareExchange:
-            delayedExchange:
-
-            durableSubscription:
-            exclusive:
-            failedDeclarationRetryInterval:
-            frameMaxHeadroom:
-            headerPatterns:
-            maxConcurrency:
-            missingQueuesFatal:
-            overflowBehavior:
-            prefetch:
-            queueDeclarationRetries:
-            recoveryInterval:
-            requeueRejected:
-            republishDeliveryMode:
-            republishToDlq:
-            txSize:
-
+            # 接收消息相关配置
+            headerPatterns:  ['x*','routing*'] # 简单的匹配模式 ("xxx*", "*xxx", "*xxx*" or "xxx*yyy")。用来筛选将被添加到 inbound messages中 的header （上下文为 Message.headers）。默认值：['*']
+            republishDeliveryMode: PERSISTENT # 当republishToDlq = true时，指定 republished message的delivery mode。默认值：DeliveryMode.PERSISTENT
+            republishToDlq: true # 消息失败，或者重试机会耗尽后仍然失败，就将message republish to DLQ。在Header中添加额外的exception头信息。默认值：false
+            requeueRejected: false # 当retry被禁用或者republishToDlq=false时错误信息是否需要重新入队
+            frameMaxHeadroom: 20000 # 将堆栈跟踪添加到DLQ消息headers时为其他headers保留的字节数。所有headers的容量必须小于消息中间件配置的 frame_max

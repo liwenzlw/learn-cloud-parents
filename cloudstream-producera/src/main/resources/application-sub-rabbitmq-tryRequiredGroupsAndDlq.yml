@@ -25,6 +25,7 @@ spring:
               transacted: true # 是否使用事务型channel。默认值：false
               confirmAckChannel: # 前提： errorChannelEnabled = true  TODO
               delayedExchange: false # 创建延时交换器（在声明交换器时使用x-delayed-type argument），消息在exchange中延时后再路由的queue中，如果rabbitmq重启，消息会丢失。需要安装额外rabbitmq plugin。默认值：false
+              delayExpression: # 消息延时时间的SpEl。在header中添加 x-delay (毫秒)。默认值：none
               #队列相关配置（仅使用于requiredGroups 指定的queue）
               bindQueue: true # 自动 declare queue，并且将 queue绑定到 exchange。默认值：true
               bindingRoutingKey: tryRequiredGroups # 将 requiredGroups 和 exchange绑定的 routingkey。 默认值：#
