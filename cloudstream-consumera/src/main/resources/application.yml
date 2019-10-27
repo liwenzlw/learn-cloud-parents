@@ -8,7 +8,8 @@ spring:
   profiles:
     include:
       #- sub-rabbitmq-for-tryRequiredGroupsAndDlq
-      - sub-rabbitmq-tryConsumer
+      #- sub-rabbitmq-tryConsumer
+      - sub-rabbitmq-errorHandling
 logging:
   level:
     root: info

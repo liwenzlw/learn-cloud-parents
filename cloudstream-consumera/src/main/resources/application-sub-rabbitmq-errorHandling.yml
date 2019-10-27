@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          group: myGroup
+        input2:
+          group: myGroup2
+      rabbit:
+        bindings:
+          input:
+            consumer:
+              autoBindDlq: true
+          input2:
+            consumer:
+              autoBindDlq: true

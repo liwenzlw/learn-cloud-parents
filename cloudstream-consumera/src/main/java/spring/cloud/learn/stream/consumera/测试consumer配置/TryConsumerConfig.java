@@ -9,4 +9,5 @@ public interface TryConsumerConfig {
 
     @Input(tryConsumerConfig)
     SubscribableChannel tryConsumerConfig();
+
 }
