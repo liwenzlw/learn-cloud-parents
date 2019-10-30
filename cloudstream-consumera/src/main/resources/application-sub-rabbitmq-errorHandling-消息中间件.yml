@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        routingToDlq:
+          group: myGroup
+        requeueRejected:
+          group: myGroup
+          consumer:
+            maxAttempts: 1 # 重试两次 + 执行一次 + 重试 1次= 2次。（header.deliveryAttempt = 重试次数） 当 maxAttempts>1 时 requeueRejected 配置失效。默认值：3
+      rabbit:
+        bindings:
+          routingToDlq:
+            consumer:
+              autoBindDlq: true
+              republish-to-dlq: true
+          requeueRejected:
+            consumer:
+              requeueRejected: true # header.amqp_redelivered = true
+              autoBindDlq: true
+              republish-to-dlq: false # 启用该配置后 requeueRejected 会失效

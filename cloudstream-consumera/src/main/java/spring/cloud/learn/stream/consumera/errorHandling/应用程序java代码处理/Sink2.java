@@ -7,6 +7,12 @@ public interface Sink2 {
 
     String input2 = "input2";
 
+
+    String retryTemplate = "retryTemplate";
+
     @Input(input2)
     SubscribableChannel input2();
+
+    @Input(retryTemplate)
+    SubscribableChannel retryTemplate();
 }

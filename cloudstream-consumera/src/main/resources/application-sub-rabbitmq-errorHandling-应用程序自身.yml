@@ -1,0 +1,31 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          group: myGroup
+        input2:
+          group: myGroup2
+        retryTemplate:
+          group: myGroup
+          consumer:
+            maxAttempts: 4 # 线程sleep。配置为2 = 执行一次 + 重试 1次。（header.deliveryAttempt = 重试次数） 当 maxAttempts>1 时 requeueRejected 配置失效。默认值：3
+            backOffInitialInterval: 1000
+            backOffMaxInterval: 10000
+            backOffMultiplier: 3 # 算法 = 当前间隔时间 * backOffMultiplier
+            defaultRetryable: true # 没有列举再 retryableExceptions 中的异常是否应该重试
+            retryableExceptions: # 配置指定的异常重试策略。false不重试，true重试
+              java.lang.IllegalStateException: false # 不重试
+            #自定义RetryTemplate 类
+            #retry-template-name: myRetryTemplate # 配置该值后  backOffInitialInterval 等将会失效
+      rabbit:
+        bindings:
+          input:
+            consumer:
+              autoBindDlq: true
+          input2:
+            consumer:
+              autoBindDlq: true
+          retryTemplate:
+            consumer:
+              autoBindDlq: true

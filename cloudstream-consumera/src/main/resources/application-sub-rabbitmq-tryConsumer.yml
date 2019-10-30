@@ -92,6 +92,6 @@ spring:
               # 接收消息相关配置
               headerPatterns:  ['x*','routing*'] # 简单的匹配模式 ("xxx*", "*xxx", "*xxx*" or "xxx*yyy")。用来筛选将被添加到 inbound messages中 的header （上下文为 Message.headers）。默认值：['*']
               republishDeliveryMode: PERSISTENT # 当republishToDlq = true时，指定 republished message的delivery mode。默认值：DeliveryMode.PERSISTENT
-              republishToDlq: true # 消息失败，或者重试机会耗尽后仍然失败，就将message republish to DLQ。在Header中添加额外的exception头信息。默认值：false
+              republishToDlq: true # 重试机会耗尽后仍然执行失败，就将message republish to DLQ。在Header中添加额外的exception头信息。默认值：false
               requeueRejected: false # 当retry被禁用或者republishToDlq=false时错误信息是否需要重新入队
               frameMaxHeadroom: 20000 # 将堆栈跟踪添加到DLQ消息headers时为其他headers保留的字节数。所有headers的容量必须小于消息中间件配置的 frame_max

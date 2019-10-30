@@ -9,7 +9,8 @@ spring:
     include:
       #- sub-rabbitmq-for-tryRequiredGroupsAndDlq
       #- sub-rabbitmq-tryConsumer
-      - sub-rabbitmq-errorHandling
+      - sub-rabbitmq-errorHandling-应用程序自身
+      #- sub-rabbitmq-errorHandling-消息中间件
 logging:
   level:
     root: info
