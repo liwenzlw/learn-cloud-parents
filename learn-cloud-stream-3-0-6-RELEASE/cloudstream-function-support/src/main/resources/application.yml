@@ -1,0 +1,25 @@
+#debug: true
+spring:
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+  application:
+    name: cloudstream-function-support
+  cloud:
+    function:
+      definition: toUpperCase;toLowerCase;date;sink;stringSupplier;stringPollSupplier;consumer;consumers;streamBridge;start1|end2
+    stream:
+      poller:
+        fixed-delay: 2000 # 轮询间隔为两秒
+        max-messages-per-poll: 2 # 每次两条信息 TODO 不知道是发送消息，还是接收消息的配置
+      source: toStream;order # 通过这个配置，会创建连接到rabbitmq的exchange
+      function:
+        bindings:
+          start1|end2: wrap12 # 重命名绑定定义,在其他地方就可以使用这个新的binding name
+      bindings:
+        wrap12:
+          destination: wrap12
+#     bindings:
+#       uppercase-in-0:
+#         destination: my-topic

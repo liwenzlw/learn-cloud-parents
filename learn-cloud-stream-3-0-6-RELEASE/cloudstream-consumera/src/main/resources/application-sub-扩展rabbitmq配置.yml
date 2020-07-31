@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        testPartingLok:
+          destination: cloud.learn.partingLok
+          group: myGroup
+          contentType: application/json
+          consumer:
+            maxAttempts: 1
+      rabbit:
+        bindings:
+          testPartingLok:
+            consumer:
+              auto-bind-dlq: true
+              dlq-ttl: 20000
+        my:
+          testPartingLok:
+            auto-bind-parting_Lok: true

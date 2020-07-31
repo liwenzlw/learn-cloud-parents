@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        requeueXDeath:
+          destination: cloud.learn.requeueXDeath
+          group: myGroup
+          contentType: application/json
+          consumer:
+            maxAttempts: 1
+      rabbit:
+        bindings:
+          requeueXDeath:
+            consumer:
+              auto-bind-dlq: true
+              dlq-ttl: 20000
+              dlq-dead-letter-exchange: # 重新入队后，amqp_deliveryTag会变

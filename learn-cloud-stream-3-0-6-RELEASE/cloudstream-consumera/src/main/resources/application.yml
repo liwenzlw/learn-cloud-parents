@@ -1,0 +1,22 @@
+spring:
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+  application:
+    name: cloud.stream.consumera
+  profiles:
+    include:
+      #- sub-rabbitmq-for-tryRequiredGroupsAndDlq
+      #- sub-rabbitmq-tryConsumer
+      #- sub-rabbitmq-errorHandling-应用程序自身
+      #- sub-rabbitmq-errorHandling-消息中间件
+      - sub-rabbitmq-errorHandling-rabbitmqBinder重试
+logging:
+  level:
+    root: info
+server:
+  port: 8001
+eureka:
+  client:
+    enabled: false
