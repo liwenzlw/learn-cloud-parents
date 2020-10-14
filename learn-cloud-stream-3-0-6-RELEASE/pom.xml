@@ -13,7 +13,7 @@
         <revision>0.0.1</revision>
         <spring-boot-dependencies.version>2.3.1.RELEASE</spring-boot-dependencies.version>
         <commons-logging.version>1.2</commons-logging.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <killbill-queue.version>0.23.8</killbill-queue.version>
         <spring-cloud-alibaba-dependencies.version>2.2.1.RELEASE</spring-cloud-alibaba-dependencies.version>
         <spring-cloud.version>Hoxton.SR6</spring-cloud.version>
